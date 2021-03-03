@@ -80,8 +80,23 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  @TargetApi(26)
   private void AddPinnedShortcut(ReadableMap shortcut, final Callback onDone, final Callback onCancel) {
+    if (!ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
+      String label = shortcut.getString("label");
+      String description = shortcut.getString("description");
+      String icon = shortcut.getString("icon");
+      ReadableMap link = shortcut.getMap("link");
+      Intent addIntent = new Intent();
+      Intent shortcutIntent =new Intent();
+      shortcutIntent.setAction(Intent.ACTION_VIEW);
+      shortcutIntent.setData(Uri.parse(link.getString("url")));
+      addIntent.putExtra("android.intent.extra.shortcut.INTENT", shortcutIntent);  //打开的Intent
+      addIntent.putExtra("android.intent.extra.shortcut.NAME", label);    //名字
+//      addIntent.putExtra("android.intent.extra.shortcut.ICON", icon);     //图标
+      addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+      reactContext.sendBroadcast(addIntent);
+      return; //不支持创建快捷方式   PinShortcut 为我们常见的桌面快捷方式
+    }
     if (ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
       String label = shortcut.getString("label");
       String description = shortcut.getString("description");
