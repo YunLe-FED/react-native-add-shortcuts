@@ -36,14 +36,7 @@ class AddShortcuts extends PureComponent {
           size: 0,
         };
       } else if (typeof props.icon === "string") {
-        props.icon = {
-          name: props.icon,
-          url: "",
-          family: "",
-          glyph: "",
-          color: "",
-          size: 0,
-        };
+        props.icon = props.icon;
       } else {
         props.icon = {};
       }

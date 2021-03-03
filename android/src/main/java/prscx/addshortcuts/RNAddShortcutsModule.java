@@ -8,6 +8,7 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -19,6 +20,7 @@ import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
+import android.util.Log;
 
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
@@ -32,8 +34,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.text.ReactFontManager;
 
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,23 +57,48 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
     return "RNAddShortcuts";
   }
 
+  public static Bitmap getBitmapFromURL(String src) {
+    try {
+
+      //uncomment below line in image name have spaces.
+      //src = src.replaceAll(" ", "%20");
+
+      URL url = new URL(src);
+
+      HttpURLConnection connection = (HttpURLConnection) url
+              .openConnection();
+      connection.setDoInput(true);
+      connection.connect();
+      InputStream input = connection.getInputStream();
+      Bitmap myBitmap = BitmapFactory.decodeStream(input);
+      return myBitmap;
+    } catch (Exception e) {
+      Log.d("vk21", e.toString());
+      return null;
+    }
+  }
+
   @ReactMethod
   @TargetApi(26)
   private void AddPinnedShortcut(ReadableMap shortcut, final Callback onDone, final Callback onCancel) {
     if (ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
-      ShortcutInfoCompat shortcut_ = new ShortcutInfoCompat.Builder(reactContext, "id1")
-              .setShortLabel("Website")
-              .setLongLabel("Open the website")
-//              .setIcon(IconCompat.createWithResource(reactContext, R.drawable.redbox_top_border_background))
+      String label = shortcut.getString("label");
+      String description = shortcut.getString("description");
+      String icon = shortcut.getString("icon");
+      ReadableMap link = shortcut.getMap("link");
+      ShortcutInfoCompat shortcut_ = new ShortcutInfoCompat.Builder(reactContext, link.getString("url"))
+              .setShortLabel(label)
+              .setShortLabel(description)
+              .setIcon(IconCompat.createWithBitmap(getBitmapFromURL(icon)))
               .setIntent(new Intent(Intent.ACTION_VIEW,
-                      Uri.parse("https://www.mysite.example.com/")))
+                      Uri.parse(link.getString("url"))))
               .build();
       Intent pinnedShortcutCallbackIntent = ShortcutManagerCompat.createShortcutResultIntent(reactContext, shortcut_);
       PendingIntent successCallback = PendingIntent.getBroadcast(reactContext, /* request code */ 0,
               pinnedShortcutCallbackIntent, /* flags */ 0);
       ShortcutManagerCompat.requestPinShortcut(reactContext, shortcut_, successCallback.getIntentSender());
     }
-
+    onDone.invoke();
 //    if (!isShortcutSupported()) {
 //      onCancel.invoke();
 //      return;
