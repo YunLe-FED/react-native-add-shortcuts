@@ -2,6 +2,7 @@
 package prscx.addshortcuts;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -18,6 +19,10 @@ import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
+
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -50,51 +55,65 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   @TargetApi(26)
   private void AddPinnedShortcut(ReadableMap shortcut, final Callback onDone, final Callback onCancel) {
-    if (!isShortcutSupported()) {
-      onCancel.invoke();
-      return;
+    if (ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
+      ShortcutInfoCompat shortcut_ = new ShortcutInfoCompat.Builder(reactContext, "id1")
+              .setShortLabel("Website")
+              .setLongLabel("Open the website")
+//              .setIcon(IconCompat.createWithResource(reactContext, R.drawable.redbox_top_border_background))
+              .setIntent(new Intent(Intent.ACTION_VIEW,
+                      Uri.parse("https://www.mysite.example.com/")))
+              .build();
+      Intent pinnedShortcutCallbackIntent = ShortcutManagerCompat.createShortcutResultIntent(reactContext, shortcut_);
+      PendingIntent successCallback = PendingIntent.getBroadcast(reactContext, /* request code */ 0,
+              pinnedShortcutCallbackIntent, /* flags */ 0);
+      ShortcutManagerCompat.requestPinShortcut(reactContext, shortcut_, successCallback.getIntentSender());
     }
 
-    String label = shortcut.getString("label");
-    String description = shortcut.getString("description");
-    ReadableMap icon = shortcut.getMap("icon");
-    ReadableMap link = shortcut.getMap("link");
-
-    BitmapDrawable drawable = null;
-    try {
-      Class<?> clazz = Class.forName("prscx.imagehelper.RNImageHelperModule"); // Controller A or B
-      Class params[] = { ReadableMap.class };
-      Method method = clazz.getDeclaredMethod("GenerateImage", params);
-
-      drawable = (BitmapDrawable) method.invoke(null, icon);
-    } catch (Exception e) {
-    }
-
-    ShortcutManager mShortcutManager = getReactApplicationContext().getSystemService(ShortcutManager.class);
-
-    Intent shortcutIntent = new Intent(getReactApplicationContext(), RNAddShortcutsModule.class);
-    shortcutIntent.setAction(Intent.ACTION_MAIN);
-    Intent intent = new Intent();
-    intent.setAction(Intent.ACTION_VIEW);
-    intent.setData(Uri.parse(link.getString("url")));
-
-    ShortcutInfo shortcutInfo = null;
-    if (drawable != null) {
-      shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
-          .setLongLabel(description).setIntent(intent).setIcon(Icon.createWithBitmap(drawable.getBitmap())).build();
-    } else {
-      shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
-          .setLongLabel(description).setIntent(intent).build();
-    }
-
-    if (mShortcutManager != null) {
-      mShortcutManager.requestPinShortcut(shortcutInfo, null);
-
-      onDone.invoke();
-      return;
-    }
-
-    onCancel.invoke();
+//    if (!isShortcutSupported()) {
+//      onCancel.invoke();
+//      return;
+//    }
+//
+//    String label = shortcut.getString("label");
+//    String description = shortcut.getString("description");
+//    ReadableMap icon = shortcut.getMap("icon");
+//    ReadableMap link = shortcut.getMap("link");
+//
+//    BitmapDrawable drawable = null;
+//    try {
+//      Class<?> clazz = Class.forName("prscx.imagehelper.RNImageHelperModule"); // Controller A or B
+//      Class params[] = { ReadableMap.class };
+//      Method method = clazz.getDeclaredMethod("GenerateImage", params);
+//
+//      drawable = (BitmapDrawable) method.invoke(null, icon);
+//    } catch (Exception e) {
+//    }
+//
+//    ShortcutManager mShortcutManager = getReactApplicationContext().getSystemService(ShortcutManager.class);
+//
+//    Intent shortcutIntent = new Intent(getReactApplicationContext(), RNAddShortcutsModule.class);
+//    shortcutIntent.setAction(Intent.ACTION_MAIN);
+//    Intent intent = new Intent();
+//    intent.setAction(Intent.ACTION_VIEW);
+//    intent.setData(Uri.parse(link.getString("url")));
+//
+//    ShortcutInfo shortcutInfo = null;
+//    if (drawable != null) {
+//      shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
+//          .setLongLabel(description).setIntent(intent).setIcon(Icon.createWithBitmap(drawable.getBitmap())).build();
+//    } else {
+//      shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
+//          .setLongLabel(description).setIntent(intent).build();
+//    }
+//
+//    if (mShortcutManager != null) {
+//      mShortcutManager.requestPinShortcut(shortcutInfo, null);
+//
+//      onDone.invoke();
+//      return;
+//    }
+//
+//    onCancel.invoke();
   }
 
   @ReactMethod
@@ -131,10 +150,10 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
     ShortcutInfo shortcutInfo = null;
     if (drawable != null) {
       shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
-          .setLongLabel(description).setIntent(intent).setIcon(Icon.createWithBitmap(drawable.getBitmap())).build();
+              .setLongLabel(description).setIntent(intent).setIcon(Icon.createWithBitmap(drawable.getBitmap())).build();
     } else {
       shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
-          .setLongLabel(description).setIntent(intent).build();
+              .setLongLabel(description).setIntent(intent).build();
     }
 
     List<ShortcutInfo> list = new ArrayList<>();
@@ -188,7 +207,7 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
     }
 
     List<ShortcutInfo> shortcuts = getReactApplicationContext().getSystemService(ShortcutManager.class)
-        .getDynamicShortcuts();
+            .getDynamicShortcuts();
     List finalShortcuts = new ArrayList(shortcuts.size());
 
     for (ShortcutInfo shortcut : shortcuts) {
