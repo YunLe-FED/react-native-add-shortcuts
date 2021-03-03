@@ -59,7 +59,7 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
 
   public static Bitmap getBitmapFromURL(String src) {
     try {
-
+      Log.d("vk21", src);
       //uncomment below line in image name have spaces.
       //src = src.replaceAll(" ", "%20");
 
@@ -74,6 +74,7 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
       return myBitmap;
     } catch (Exception e) {
       Log.d("vk21", e.toString());
+      Log.d("vk21", src);
       return null;
     }
   }
