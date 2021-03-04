@@ -80,23 +80,8 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  @TargetApi(26)
   private void AddPinnedShortcut(ReadableMap shortcut, final Callback onDone, final Callback onCancel) {
-    if (!ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
-      String label = shortcut.getString("label");
-      String description = shortcut.getString("description");
-      String icon = shortcut.getString("icon");
-      ReadableMap link = shortcut.getMap("link");
-      Intent addIntent = new Intent();
-      Intent shortcutIntent =new Intent();
-      shortcutIntent.setAction(Intent.ACTION_VIEW);
-      shortcutIntent.setData(Uri.parse(link.getString("url")));
-      addIntent.putExtra("android.intent.extra.shortcut.INTENT", shortcutIntent);  //打开的Intent
-      addIntent.putExtra("android.intent.extra.shortcut.NAME", label);    //名字
-//      addIntent.putExtra("android.intent.extra.shortcut.ICON", icon);     //图标
-      addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-      reactContext.sendBroadcast(addIntent);
-      return; //不支持创建快捷方式   PinShortcut 为我们常见的桌面快捷方式
-    }
     if (ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
       String label = shortcut.getString("label");
       String description = shortcut.getString("description");
@@ -115,51 +100,6 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
       ShortcutManagerCompat.requestPinShortcut(reactContext, shortcut_, successCallback.getIntentSender());
     }
     onDone.invoke();
-//    if (!isShortcutSupported()) {
-//      onCancel.invoke();
-//      return;
-//    }
-//
-//    String label = shortcut.getString("label");
-//    String description = shortcut.getString("description");
-//    ReadableMap icon = shortcut.getMap("icon");
-//    ReadableMap link = shortcut.getMap("link");
-//
-//    BitmapDrawable drawable = null;
-//    try {
-//      Class<?> clazz = Class.forName("prscx.imagehelper.RNImageHelperModule"); // Controller A or B
-//      Class params[] = { ReadableMap.class };
-//      Method method = clazz.getDeclaredMethod("GenerateImage", params);
-//
-//      drawable = (BitmapDrawable) method.invoke(null, icon);
-//    } catch (Exception e) {
-//    }
-//
-//    ShortcutManager mShortcutManager = getReactApplicationContext().getSystemService(ShortcutManager.class);
-//
-//    Intent shortcutIntent = new Intent(getReactApplicationContext(), RNAddShortcutsModule.class);
-//    shortcutIntent.setAction(Intent.ACTION_MAIN);
-//    Intent intent = new Intent();
-//    intent.setAction(Intent.ACTION_VIEW);
-//    intent.setData(Uri.parse(link.getString("url")));
-//
-//    ShortcutInfo shortcutInfo = null;
-//    if (drawable != null) {
-//      shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
-//          .setLongLabel(description).setIntent(intent).setIcon(Icon.createWithBitmap(drawable.getBitmap())).build();
-//    } else {
-//      shortcutInfo = new ShortcutInfo.Builder(getReactApplicationContext(), label).setShortLabel(label)
-//          .setLongLabel(description).setIntent(intent).build();
-//    }
-//
-//    if (mShortcutManager != null) {
-//      mShortcutManager.requestPinShortcut(shortcutInfo, null);
-//
-//      onDone.invoke();
-//      return;
-//    }
-//
-//    onCancel.invoke();
   }
 
   @ReactMethod
