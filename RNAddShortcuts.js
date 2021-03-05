@@ -17,32 +17,32 @@ class AddShortcuts extends PureComponent {
   static defaultProps = {};
 
   static AddDynamicShortcut(props) {
-    if (props.icon && props.icon.props) {
-      props.icon = props.icon.props;
+    // if (props.icon && props.icon.props) {
+    //   props.icon = props.icon.props;
 
-      let vectorIcon = RNImageHelper.Resolve(
-        props.icon.family,
-        props.icon.name
-      );
-      props.icon = Object.assign({}, props.icon, vectorIcon);
-    } else if (props.icon !== undefined) {
-      if (typeof props.icon === "number") {
-        props.icon = {
-          name: "",
-          url: resolveAssetSource(props.icon),
-          family: "",
-          glyph: "",
-          color: "",
-          size: 0,
-        };
-      } else if (typeof props.icon === "string") {
-        props.icon = props.icon;
-      } else {
-        props.icon = {};
-      }
-    } else {
-      props.icon = {};
-    }
+    //   let vectorIcon = RNImageHelper.Resolve(
+    //     props.icon.family,
+    //     props.icon.name
+    //   );
+    //   props.icon = Object.assign({}, props.icon, vectorIcon);
+    // } else if (props.icon !== undefined) {
+    //   if (typeof props.icon === "number") {
+    //     props.icon = {
+    //       name: "",
+    //       url: resolveAssetSource(props.icon),
+    //       family: "",
+    //       glyph: "",
+    //       color: "",
+    //       size: 0,
+    //     };
+    //   } else if (typeof props.icon === "string") {
+    //     props.icon = props.icon;
+    //   } else {
+    //     props.icon = {};
+    //   }
+    // } else {
+    //   props.icon = {};
+    // }
 
     RNAddShortcuts.AddDynamicShortcut(
       props,
@@ -56,39 +56,39 @@ class AddShortcuts extends PureComponent {
   }
 
   static AddPinnedShortcut(props) {
-    if (props.icon && props.icon.props) {
-      props.icon = props.icon.props;
+    // if (props.icon && props.icon.props) {
+    //   props.icon = props.icon.props;
 
-      let vectorIcon = RNImageHelper.Resolve(
-        props.icon.family,
-        props.icon.name
-      );
-      props.icon = Object.assign({}, props.icon, vectorIcon);
-    } else if (props.icon !== undefined) {
-      if (typeof props.icon === "number") {
-        props.icon = {
-          name: "",
-          url: resolveAssetSource(props.icon),
-          family: "",
-          glyph: "",
-          color: "",
-          size: 0,
-        };
-      } else if (typeof props.icon === "string") {
-        props.icon = {
-          name: props.icon,
-          url: "",
-          family: "",
-          glyph: "",
-          color: "",
-          size: 0,
-        };
-      } else {
-        props.icon = {};
-      }
-    } else {
-      props.icon = {};
-    }
+    //   let vectorIcon = RNImageHelper.Resolve(
+    //     props.icon.family,
+    //     props.icon.name
+    //   );
+    //   props.icon = Object.assign({}, props.icon, vectorIcon);
+    // } else if (props.icon !== undefined) {
+    //   if (typeof props.icon === "number") {
+    //     props.icon = {
+    //       name: "",
+    //       url: resolveAssetSource(props.icon),
+    //       family: "",
+    //       glyph: "",
+    //       color: "",
+    //       size: 0,
+    //     };
+    //   } else if (typeof props.icon === "string") {
+    //     props.icon = {
+    //       name: props.icon,
+    //       url: "",
+    //       family: "",
+    //       glyph: "",
+    //       color: "",
+    //       size: 0,
+    //     };
+    //   } else {
+    //     props.icon = {};
+    //   }
+    // } else {
+    //   props.icon = {};
+    // }
 
     RNAddShortcuts.AddPinnedShortcut(
       props,

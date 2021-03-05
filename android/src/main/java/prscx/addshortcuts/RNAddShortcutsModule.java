@@ -89,12 +89,12 @@ public class RNAddShortcutsModule extends ReactContextBaseJavaModule {
     if (ShortcutManagerCompat.isRequestPinShortcutSupported(reactContext)) {
       String label = shortcut.getString("label");
       String description = shortcut.getString("description");
-//      String icon = shortcut.getString("icon");
+      String icon = shortcut.getString("icon");
       ReadableMap link = shortcut.getMap("link");
       ShortcutInfoCompat shortcut_ = new ShortcutInfoCompat.Builder(reactContext, link.getString("url"))
               .setShortLabel(label)
               .setShortLabel(description)
-//              .setIcon(IconCompat.createWithBitmap(getBitmapFromURL(icon)))
+             .setIcon(IconCompat.createWithBitmap(getBitmapFromURL(icon)))
               .setIntent(new Intent(Intent.ACTION_VIEW,
                       Uri.parse(link.getString("url"))))
               .build();
